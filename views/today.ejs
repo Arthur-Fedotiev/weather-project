@@ -1,0 +1,130 @@
+<%- include("partials/header"); -%>
+
+<body>
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+    <header class="masthead">
+
+      <nav class="navbar navbar-dark default-color justify-content-between bg-transparent">
+
+        <a class="navbar-brand" href="#">Navbar</a>
+
+        <form class="form-inline my-1">
+          <div class="md-form form-sm my-0">
+            <input class="form-control form-control-sm mr-sm-2 mb-0" type="text" placeholder="Search" aria-label="Search">
+          </div>
+          <button class="btn btn-outline-light btn-sm my-0" type="submit">Search</button>
+        </form>
+
+        <div class="container-fluid justify-content-center">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link active" href="/home">Сьогодні</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Завтра</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Тиждень</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Nav tabs -->
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="messages-tab" data-toggle="tab" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages</a>
+  </li>
+  </ul>
+
+      </nav>
+    </header>
+
+    <main role="main main-container" class="inner cover">
+
+      <!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab"
+  >Home
+</div>
+  <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">profule</div>
+  <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">message</div>
+  </div>
+
+      <div class="location-container">
+        <h1 class="cover-heading position-value"><%= userAddress %></h1>
+        <p class="lead position-description"><%= today %></p>
+      </div>
+
+
+      <div class="temperature-container">
+        <h1 class="cover-heading temperature-value"><%= temp %> &#8451</h1>
+        <div class="row  align-items-center mr-0">
+          <div class="col-3">
+            <!-- <i class="fas fa-sun weather-icon"></i> -->
+            <img src="<%= iconUrl %>" alt="Weather Condition Image" class="weather-icon">
+          </div>
+
+          <div class="col-3">
+            <p class="lead position-description"><%= weatherCondition %></p>
+          </div>
+        </div>
+      </div>
+
+<div class="scrollmenu">
+  <div class="row flex-nowrap">
+
+<% for (let i = 0; i < hourlyTime.length; i++) { %>
+    <div class="col-4 hourly-weather">
+
+        <p><%= hourlyTime[i] %></p>
+        <h3><%= hourlyTemperature[i] %></h3>
+        <img src="<%= hourlyIcon[i] %>" alt="Weather Condition Image" class="weather-icon-hourly">
+        <p><%= hourlyWeatherDescription[i] %></p>
+
+
+    </div>
+<% }; %>
+
+    </main>
+
+    <%- include("partials/footer"); -%>
+
+
+    <!-- <div class="progress progress-outer">
+      <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+    </div> -->
+
+
+          <!-- <div class="row weather-details-container">
+            <div class="col-4">
+              <p>Вітер</p>
+              <h3><%= wind %></h3>
+              <p>м/с</p>
+              <div class="progress progress-outer">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+            <div class="col-4">
+              <p>Опади</p>
+              <h3><%= humidity %></h3>
+              <p>&#37</p>
+              <div class="progress progress-outer">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+            <div class="col-4">
+              <p>Тиск</p>
+              <h3><%= pressure %></h3>
+              <p>гПа</p>
+              <div class="progress progress-outer">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </div> -->
