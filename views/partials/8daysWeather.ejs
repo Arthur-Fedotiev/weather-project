@@ -1,0 +1,21 @@
+<div class="week-container">
+
+  <% daylyForecast.forEach(function(day, index){ %>
+  <div class="row">
+    <div class="col-8">
+      <p class="">
+        <%= weekDay[index] %>
+      </p>
+      <p class=""><%= day.weather[0].description; %></p>
+    </div>
+    <div class="col-2">
+      <img class="weekday-img" src="http://openweathermap.org/img/wn/<%= day.weather[0].icon %>@2x.png" alt="">
+    </div>
+    <div class="col-2">
+      <p class=""><%= Math.floor(day.temp.max) %> </p>
+      <p><%= Math.floor(day.temp.min) %></p>
+    </div>
+  </div>
+  <% }); %>
+
+</div>

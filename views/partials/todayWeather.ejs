@@ -1,0 +1,48 @@
+<div class="location-container">
+  <!-- <h1 class="cover-heading position-value"><%= userAddress %></h1> -->
+  <p class="lead current-date"><%= today %></p>
+</div>
+
+<div class="temperature-container-main">
+  <div class="row mr-0 ml-0">
+    <div class="col-12 temp-section">
+      <p class="lead day-night-temp">Вдень <%= Math.floor(maxTemp) %> &#8451 &#8593; | Вночі <%= Math.floor(minTemp) %> &#8451 &#8595;</p>
+    </div>
+
+  </div>
+  <div class="row  align-items-center mr-0 ml-0">
+    <div class="col-8 temp-section">
+      <h1 class="position-description"><%= Math.floor(temp) %><sup>&#8451</sup></h1>
+
+    </div>
+    <div class="col-4 temp-section">
+      <!-- <i class="fas fa-sun weather-icon"></i> -->
+      <img src="<%= iconUrl %>" alt="Weather Condition Image" class="weather-icon tomorrow-icon">
+
+    </div>
+  </div>
+  <div class="row mr-0 ml-0">
+    <div class="col-8 temp-section">
+      <p class="lead">Відчувається як <%= Math.floor(feelsLike) %>° </p>
+    </div>
+    <div class="col-4 temp-section">
+      <p class="lead position-description"><%= weatherCondition %></p>
+    </div>
+  </div>
+</div>
+
+<div class="hourly-weather-container scrollmenu">
+  <div class="row flex-nowrap">
+
+    <% for (let i = 0; i < hourlyTime.length; i++) { %>
+
+    <div class="col-4 hourly-weather">
+
+      <h3 class="hourly-temp-value"><%= Math.floor(hourlyTemperature[i]) %> &#8451 </h3>
+      <img src="<%= hourlyIcon[i] %>" alt="Weather Condition Image" class="weather-icon-hourly">
+      <h4><%= hourlyTime[i] %> : 00</h3>
+      <!-- <p class="weather-description"><%= hourlyWeatherDescription[i] %></p> -->
+    </div>
+    <% }; %>
+  </div>
+</div>
