@@ -50,3 +50,8 @@ exports.dayTime = function () {
   } else {return "Доброго ранку!";}
 
 };
+
+// exports.dayTime = function (locationResponseFromIq) {
+// const rawAddress = locationResponseFromIq[0].address;
+//
+// };

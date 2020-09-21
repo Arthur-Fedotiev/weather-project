@@ -24,8 +24,9 @@ a:hover {
  */
 html,
 body {
-  height: 100%;
+  min-height: 100%;
   background-image: url("https://picsum.photos/400/700");
+  background-attachment: fixed;
   background-repeat: no-repeat;
   background-origin: content-box;
   background-size: 100% 100%;
@@ -33,7 +34,7 @@ body {
 }
 
 body {
-  min-height: 100%;
+  min-height: 100vh;
   display: -ms-flexbox;
   display: flex;
   color: #fff;
@@ -45,7 +46,12 @@ h1 {
   font-size: 8rem;
 }
 
-p, h2::first-letter {
+h2 {
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+p::first-letter, h2::first-letter {
   text-transform: capitalize;
 }
 
@@ -63,9 +69,11 @@ sup {
   font-size: 3rem;
 }
 
+hr {
+  border: solid 1px;
+}
+
 /* TABS */
-
-
 .home-header {
   margin-bottom: 0 !important;
 }
@@ -97,28 +105,33 @@ sup {
   margin-top: 5rem;
 }
 
-.hourly-weather-container {
+.today-hourly-weather-container {
+  margin-top: 7rem;
+}
+
+.tomorrow-hourly-weather-container {
+  margin-top: 15rem;
+}
+
+.precipitations-container {
   margin-top: 1rem;
 }
 
 .hourly-weather {
   border-bottom: 0.1rem solid #eaf6f6;
-  margin-top: 6rem;
 }
 
 /*-----------------------------   WEEK TAB ---------------------------*/
-
-.week-container{
+.week-container {
   text-align: left;
   margin-top: 2rem;
   padding-left: 15px;
 }
 
-.weekday-img{
+.weekday-img {
   width: 75px;
-    margin-left: -1rem;
+  margin-left: -1rem;
 }
-
 
 /* SECTIONS */
 .temp-section {
@@ -170,6 +183,7 @@ sup {
 
 .greetings {
   margin-top: 5rem;
+  font-size: 3rem;
 }
 
 .cover .btn-lg {
@@ -268,6 +282,10 @@ div.scrollmenu>row {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+.pop-description {
+  display: inline-block;
 }
 
 /*Search BUTTON */

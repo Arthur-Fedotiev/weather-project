@@ -17,7 +17,7 @@ function getCoords() {
       $.post("/today1", {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
-        }, // data to be submit
+        }, // data to be submitted
         function(data, status, xhr) { // success callback function
           $("#search-input").attr("placeholder", data.responseData);
           console.log(data);
@@ -29,7 +29,7 @@ function getCoords() {
   }
 }
 
-getCoords();
+//getCoords();
 
 $(document).ready(function() {
 

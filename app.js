@@ -16,6 +16,8 @@ app.use(express.static("public"));
 const date = require(__dirname + "/date.js");
 const today = date.date();
 const dayTime = date.dayTime();
+let displayedLocation = "Дізнатися погоду...";
+let queryIsmade = false;
 
 // const currentLocation = require(__dirname + "/location.js");
 
@@ -26,12 +28,13 @@ app.set("views", __dirname + "/views");
 app.get("/", function(req, res) {
   res.render("home", {
     today: today,
-    dayTime: dayTime
+    dayTime: dayTime,
+    displayedLocation: displayedLocation
   });
 });
 app.get("/today", function(req, res) {
 
-  res.render("today");
+  res.redirect("/");
 });
 
 app.post("/today1", function(req, res) {
@@ -78,27 +81,36 @@ app.post("/today1", function(req, res) {
 
 app.post("/today", function(req, res) {
 
+queryIsmade = true;
 
   const key = "pk.cb4d293dc5b9c4485829a61332d0756f";
   const format = "json";
-  let locationUrl = "";
-  let cityToFind = "";
-  let lang = "";
-  let long = "";
+  let searchRequestFromUser = {
+    locationUrl: "",
+    cityToFind: "",
+    lat: "",
+    long: ""
+  };
+  let userLocationData = {
+    userCity: "",
+    userRegion: "",
+    userCountry: "",
+    userAddress: ""
+  };
 
   if (req.body.city) {
-    cityToFind = req.body.city;
-    locationUrl = "https://eu1.locationiq.com/v1/search.php?key=" + key + "&format=" + format + "&accept-language=ukr" + "&q=" + cityToFind;
+    searchRequestFromUser.cityToFind = req.body.city;
+    searchRequestFromUser.locationUrl = "https://eu1.locationiq.com/v1/search.php?key=" + key + "&format=" + format + "&accept-language=ukr" + "&q=" + searchRequestFromUser.cityToFind + "&addressdetails=1" + "&normalizecity=1";
   } else {
-    lat = req.body.latitude;
-    long = req.body.longitude;
-    locationUrl = "https://eu1.locationiq.com/v1/reverse.php?key=" + key + "&lat=" + lat + "&lon=" + long + "&format=" + format + "&accept-language=ukr" + "&normalizecity=1";
+    searchRequestFromUser.lat = req.body.latitude;
+    searchRequestFromUser.long = req.body.longitude;
+    searchRequestFromUser.locationUrl = "https://eu1.locationiq.com/v1/reverse.php?key=" + key + "&lat=" + searchRequestFromUser.lat + "&lon=" + searchRequestFromUser.long + "&format=" + format + "&accept-language=ukr" + "&normalizecity=1";
   }
 
-console.log(locationUrl);
+  console.log(searchRequestFromUser.locationUrl);
 
   //+++++++++++++++++++++GET Request to LocationIQ API++++++++++++++++++
-  https.get(locationUrl, function(response) {
+  https.get(searchRequestFromUser.locationUrl, function(response) {
     response.setEncoding("utf8");
     let body = "";
     response.on("data", data1 => {
@@ -108,22 +120,32 @@ console.log(locationUrl);
     });
     response.on("end", () => {
       jsonData = JSON.parse(body);
-
       const locationIqData = jsonData; // Data from LocationIQ API in json format with UTF8 ncoding system
 
-      const userCity = locationIqData.address.city;
-      const userRegion = locationIqData.address.state;
-      const userCountry = locationIqData.address.country;
+      if (req.body.city) {
+        searchRequestFromUser.lat = locationIqData[0].lat;
+        searchRequestFromUser.long = locationIqData[0].lon;
 
-      const userAddress = userCity + ", " + userRegion + ", " + userCountry;
+        userLocationData.userCity = locationIqData[0].address.city + ", ";
+        userLocationData.userCity = locationIqData[0].address.city ? locationIqData[0].address.city + ", "  : locationIqData[0].address.county + ", ";
+        userLocationData.userRegion = locationIqData[0].address.state ? locationIqData[0].address.state + ", "  : "";
+        userLocationData.userCountry = locationIqData[0].address.country;
 
-      console.log("You are in here:" + userCity);
+      } else {
+        userLocationData.userCity = locationIqData.address.city + ", ";
+        userLocationData.userRegion = locationIqData.address.state  + ", ";
+        userLocationData.userCountry = locationIqData.address.country;
+      }
+
+      userLocationData.userAddress = userLocationData.userCity + userLocationData.userRegion + userLocationData.userCountry;
+      displayedLocation = userLocationData.userAddress;
+      console.log("Located is " + userLocationData.userAddress);
 
       //+++++++++++++++++++++GET Request to OpenWheatherMap API++++++++++++++++++
       const appId = "059c7d620fd0e428b3446b8e192cfe1e";
       const units = "metric";
 
-      const weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + long + "&exclude=minutely&appid=" + appId + "&units=" + units + "&lang=ua";
+      const weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + searchRequestFromUser.lat + "&lon=" + searchRequestFromUser.long + "&exclude=minutely&appid=" + appId + "&units=" + units + "&lang=ua";
       console.log(weatherUrl);
       https.get(weatherUrl, function(response) {
 
@@ -225,17 +247,16 @@ console.log(locationUrl);
 
           const daylyForecast = weatherData.daily;
 
-          // const weekDay = [];
-          // daylyForecast.forEach(function(day) {
-          //   weekDay.push(date.timestampConverter(day.dt));
-          // });
+          const todayPrecipitationProbability = weatherData.daily[0].pop * 100;
+          const tomorrowPrecipitationProbability = weatherData.daily[1].pop * 100;
+
 
           const weekDay = daylyForecast.map(day => date.timestampConverter(day.dt));
 
 
           //----------------------------- RENDERING --------------------------------------
           res.render("today", {
-            userAddress: userAddress,
+            userAddress: userLocationData.userAddress,
             today: today,
             temp: temp,
             wind: wind,
@@ -250,6 +271,7 @@ console.log(locationUrl);
             minTemp: minTemp,
             maxTemp: maxTemp,
             feelsLike: feelsLike,
+            todayPrecipitationProbability: todayPrecipitationProbability,
 
             daylyForecast: daylyForecast,
             weekDay: weekDay,
@@ -263,7 +285,10 @@ console.log(locationUrl);
             tomorrowHourlyTemperature: tomorrowWeatherCharacteristics.temperature,
             tomorrowHourlyIcon: tomorrowWeatherCharacteristics.icon,
             tomorrowHourlyWeatherDescription: tomorrowWeatherCharacteristics.weather,
-            tomorrow: tomorrow
+            tomorrow: tomorrow,
+            tomorrowPrecipitationProbability: tomorrowPrecipitationProbability,
+
+            displayedLocation: displayedLocation
           });
         });
 

@@ -1,35 +1,39 @@
 <div class="location-container">
-  <h1 class="cover-heading position-value"><%= userAddress %></h1>
-  <p class="lead position-description"><%= tomorrow %></p>
+    <p class="lead current-date"><%= tomorrow %></p>
 </div>
 
 
-<div class="temperature-container">
-  <div class="row  align-items-end mr-0">
-    <div class="col-8">
-      <p><%= tomorrowDayTemp %> &#8451 &#8593; <%= tomorrowNightTemp %> &#8451 &#8595;</p>
-      <p></p>
+
+
+<div class="temperature-container-main">
+  <div class="row align-items-center mr-0 mr-0 ml-0">
+    <div class="col-9 temp-section">
+      <p class="lead day-night-temp">Вдень <%= tomorrowDayTemp %> &#8451 &#8593; | Вночі <%= tomorrowNightTemp %> &#8451 &#8595;</p>
       <h2 class="position-description"><%= tomorrowWeatherDescription %></h2>
     </div>
-    <div class="col-4">
+    <div class="col-3 temp-section">
       <!-- <i class="fas fa-sun weather-icon"></i> -->
       <img src="<%= tomorrowIconUrl %>" alt="Weather Condition Image" class="weather-icon tomorrow-icon">
     </div>
   </div>
 </div>
 
-<div class="scrollmenu">
+<div class="tomorrow-hourly-weather-container scrollmenu">
   <div class="row flex-nowrap">
 
     <% for (let i = 0; i < tomorrowHourlyTime.length; i++) { %>
+
     <div class="col-4 hourly-weather">
 
-      <p><%= tomorrowHourlyTime[i] %></p>
-      <h3><%= Math.floor(tomorrowHourlyTemperature[i]) %></h3>
+      <h3 class="hourly-temp-value"><%= Math.floor(tomorrowHourlyTemperature[i]) %> &#8451 </h3>
       <img src="<%= tomorrowHourlyIcon[i] %>" alt="Weather Condition Image" class="weather-icon-hourly">
-      <p><%= tomorrowHourlyWeatherDescription[i] %></p>
+      <h4><%= tomorrowHourlyTime[i] %> : 00</h4>
+
     </div>
     <% }; %>
-
   </div>
 </div>
+<div class="precipitations-container">
+  <i class="fas fa-umbrella pop-img"></i>
+  <p class="pop-description">Вірогідність опадів: <%= tomorrowPrecipitationProbability %>&#37;</p>
+  </div>
