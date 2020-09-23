@@ -7,10 +7,11 @@ const bodyParser = require("body-parser");
 
 let userIsLocated = false;
 
-
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 app.use(express.static("public"));
 
 const date = require(__dirname + "/date.js");
@@ -21,42 +22,47 @@ let queryIsmade = false;
 
 // const currentLocation = require(__dirname + "/location.js");
 
-
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.render("home", {
     today: today,
     dayTime: dayTime,
-    displayedLocation: displayedLocation
+    displayedLocation: displayedLocation,
   });
 });
-app.get("/today", function(req, res) {
-
+app.get("/today", function (req, res) {
   res.redirect("/");
 });
 
-app.post("/today1", function(req, res) {
-
+app.post("/today1", function (req, res) {
   const lat = req.body.latitude;
   const long = req.body.longitude;
   const key = "pk.cb4d293dc5b9c4485829a61332d0756f";
   const format = "json";
 
-  const locationUrl = "https://eu1.locationiq.com/v1/reverse.php?key=" + key + "&lat=" + lat + "&lon=" + long + "&format=" + format + "&accept-language=ukr" + "&normalizecity=1";
+  const locationUrl =
+    "https://eu1.locationiq.com/v1/reverse.php?key=" +
+    key +
+    "&lat=" +
+    lat +
+    "&lon=" +
+    long +
+    "&format=" +
+    format +
+    "&accept-language=ukr" +
+    "&normalizecity=1";
 
   const appId = "059c7d620fd0e428b3446b8e192cfe1e";
   const units = "metric";
 
   //+++++++++++++++++++++GET Request to LocationIQ API++++++++++++++++++
-  https.get(locationUrl, function(response) {
+  https.get(locationUrl, function (response) {
     response.setEncoding("utf8");
     let body = "";
-    response.on("data", data1 => {
-
+    response.on("data", (data1) => {
       body += data1;
-
     });
     response.on("end", () => {
       jsonData = JSON.parse(body);
@@ -71,17 +77,14 @@ app.post("/today1", function(req, res) {
 
       console.log("You are in here:" + userCity);
       res.json({
-        responseData: userAddress
+        responseData: userAddress,
       });
-
     });
-
   });
 });
 
-app.post("/today", function(req, res) {
-
-queryIsmade = true;
+app.post("/today", function (req, res) {
+  queryIsmade = true;
 
   const key = "pk.cb4d293dc5b9c4485829a61332d0756f";
   const format = "json";
@@ -89,34 +92,51 @@ queryIsmade = true;
     locationUrl: "",
     cityToFind: "",
     lat: "",
-    long: ""
+    long: "",
   };
   let userLocationData = {
     userCity: "",
     userRegion: "",
     userCountry: "",
-    userAddress: ""
+    userAddress: "",
   };
 
   if (req.body.city) {
     searchRequestFromUser.cityToFind = req.body.city;
-    searchRequestFromUser.locationUrl = "https://eu1.locationiq.com/v1/search.php?key=" + key + "&format=" + format + "&accept-language=ukr" + "&q=" + searchRequestFromUser.cityToFind + "&addressdetails=1" + "&normalizecity=1";
+    searchRequestFromUser.locationUrl =
+      "https://eu1.locationiq.com/v1/search.php?key=" +
+      key +
+      "&format=" +
+      format +
+      "&accept-language=ukr" +
+      "&q=" +
+      searchRequestFromUser.cityToFind +
+      "&addressdetails=1" +
+      "&normalizecity=1";
   } else {
     searchRequestFromUser.lat = req.body.latitude;
     searchRequestFromUser.long = req.body.longitude;
-    searchRequestFromUser.locationUrl = "https://eu1.locationiq.com/v1/reverse.php?key=" + key + "&lat=" + searchRequestFromUser.lat + "&lon=" + searchRequestFromUser.long + "&format=" + format + "&accept-language=ukr" + "&normalizecity=1";
+    searchRequestFromUser.locationUrl =
+      "https://eu1.locationiq.com/v1/reverse.php?key=" +
+      key +
+      "&lat=" +
+      searchRequestFromUser.lat +
+      "&lon=" +
+      searchRequestFromUser.long +
+      "&format=" +
+      format +
+      "&accept-language=ukr" +
+      "&normalizecity=1";
   }
 
   console.log(searchRequestFromUser.locationUrl);
 
   //+++++++++++++++++++++GET Request to LocationIQ API++++++++++++++++++
-  https.get(searchRequestFromUser.locationUrl, function(response) {
+  https.get(searchRequestFromUser.locationUrl, function (response) {
     response.setEncoding("utf8");
     let body = "";
-    response.on("data", data1 => {
-
+    response.on("data", (data1) => {
       body += data1;
-
     });
     response.on("end", () => {
       jsonData = JSON.parse(body);
@@ -127,17 +147,23 @@ queryIsmade = true;
         searchRequestFromUser.long = locationIqData[0].lon;
 
         userLocationData.userCity = locationIqData[0].address.city + ", ";
-        userLocationData.userCity = locationIqData[0].address.city ? locationIqData[0].address.city + ", "  : locationIqData[0].address.county + ", ";
-        userLocationData.userRegion = locationIqData[0].address.state ? locationIqData[0].address.state + ", "  : "";
+        userLocationData.userCity = locationIqData[0].address.city
+          ? locationIqData[0].address.city + ", "
+          : locationIqData[0].address.county + ", ";
+        userLocationData.userRegion = locationIqData[0].address.state
+          ? locationIqData[0].address.state + ", "
+          : "";
         userLocationData.userCountry = locationIqData[0].address.country;
-
       } else {
         userLocationData.userCity = locationIqData.address.city + ", ";
-        userLocationData.userRegion = locationIqData.address.state  + ", ";
+        userLocationData.userRegion = locationIqData.address.state + ", ";
         userLocationData.userCountry = locationIqData.address.country;
       }
 
-      userLocationData.userAddress = userLocationData.userCity + userLocationData.userRegion + userLocationData.userCountry;
+      userLocationData.userAddress =
+        userLocationData.userCity +
+        userLocationData.userRegion +
+        userLocationData.userCountry;
       displayedLocation = userLocationData.userAddress;
       console.log("Located is " + userLocationData.userAddress);
 
@@ -145,20 +171,25 @@ queryIsmade = true;
       const appId = "059c7d620fd0e428b3446b8e192cfe1e";
       const units = "metric";
 
-      const weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + searchRequestFromUser.lat + "&lon=" + searchRequestFromUser.long + "&exclude=minutely&appid=" + appId + "&units=" + units + "&lang=ua";
+      const weatherUrl =
+        "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+        searchRequestFromUser.lat +
+        "&lon=" +
+        searchRequestFromUser.long +
+        "&exclude=minutely&appid=" +
+        appId +
+        "&units=" +
+        units +
+        "&lang=ua";
       console.log(weatherUrl);
-      https.get(weatherUrl, function(response) {
-
+      https.get(weatherUrl, function (response) {
         response.setEncoding("utf8");
         let body2 = "";
-        response.on("data", data2 => {
-
+        response.on("data", (data2) => {
           body2 += data2;
-
         });
 
         response.on("end", () => {
-
           const weatherData = JSON.parse(body2);
           const temp = weatherData.current.temp;
           const feelsLike = weatherData.current.feels_like;
@@ -167,7 +198,8 @@ queryIsmade = true;
           const pressure = weatherData.current.pressure;
           const weatherCondition = weatherData.current.weather[0].description;
           const iconID = weatherData.current.weather[0].icon;
-          const iconUrl = "http://openweathermap.org/img/wn/" + iconID + "@2x.png";
+          const iconUrl =
+            "http://openweathermap.org/img/wn/" + iconID + "@2x.png";
 
           //------------------- Weahter for each HOUR of the current day------------------------------------
 
@@ -181,66 +213,86 @@ queryIsmade = true;
             weather: [],
           };
 
-          weatherOfHours.every(function(dateTimestamp) {
+          weatherOfHours.every(function (dateTimestamp) {
             const datestampInHours = date.hoursConverter(dateTimestamp.dt); //Converting date to normal Format and getting hour
-            const iconUrl = "http://openweathermap.org/img/wn/" + dateTimestamp.weather[0].icon + "@2x.png";
+            const iconUrl =
+              "http://openweathermap.org/img/wn/" +
+              dateTimestamp.weather[0].icon +
+              "@2x.png";
 
             hourlyWeatherCharacteristics.dt.push(dateTimestamp.dt);
             hourlyWeatherCharacteristics.time.push(datestampInHours);
             hourlyWeatherCharacteristics.temperature.push(dateTimestamp.temp);
-            hourlyWeatherCharacteristics.weather.push(dateTimestamp.weather[0].description);
+            hourlyWeatherCharacteristics.weather.push(
+              dateTimestamp.weather[0].description
+            );
             hourlyWeatherCharacteristics.icon.push(iconUrl);
             if (datestampInHours == 6) return false;
             else return true;
           });
 
           // MAX & MIN temperature for Current Day
-          const maxTemp = hourlyWeatherCharacteristics.temperature.reduce(function(total, num) {
-            return Math.max(total, num);
-          });
+          const maxTemp = hourlyWeatherCharacteristics.temperature.reduce(
+            function (total, num) {
+              return Math.max(total, num);
+            }
+          );
           console.log(maxTemp);
-          const minTemp = hourlyWeatherCharacteristics.temperature.reduce(function(total, num) {
-            return Math.min(total, num);
-          });
-
-
+          const minTemp = hourlyWeatherCharacteristics.temperature.reduce(
+            function (total, num) {
+              return Math.min(total, num);
+            }
+          );
 
           //------------------- Weather for Tomorrow ------------------------------------
           const tomorrowWeatherData = weatherData.daily[1];
           const tomorrowDayTemp = Math.floor(tomorrowWeatherData.temp.day);
           const tomorrowNightTemp = Math.floor(tomorrowWeatherData.temp.night);
-          const tomorrowWeatherDescription = tomorrowWeatherData.weather[0].description;
-          const tomorrowIconUrl = "http://openweathermap.org/img/wn/" + tomorrowWeatherData.weather[0].icon + "@2x.png";
-
+          const tomorrowWeatherDescription =
+            tomorrowWeatherData.weather[0].description;
+          const tomorrowIconUrl =
+            "http://openweathermap.org/img/wn/" +
+            tomorrowWeatherData.weather[0].icon +
+            "@2x.png";
 
           const beginOfTomorrow = weatherData.daily[1].dt - 5 * 3600; //12PM - 5hours = 7 a.m.
           const tomorrow = date.timestampConverter(beginOfTomorrow);
           console.log(tomorrow);
           //Find the index of the element of 7 a.m.
           let indexOfbeginOfTomorrow;
-          weatherOfHours.forEach(function(dt, index) {
+          weatherOfHours.forEach(function (dt, index) {
             if (dt.dt == beginOfTomorrow) {
               indexOfbeginOfTomorrow = index;
             }
           });
           //Get Array of Weather Data for 24hours, starting from 7 a.m
-          const tomorrowHourlyWeather = weatherData.hourly.slice(indexOfbeginOfTomorrow, indexOfbeginOfTomorrow + 24);
+          const tomorrowHourlyWeather = weatherData.hourly.slice(
+            indexOfbeginOfTomorrow,
+            indexOfbeginOfTomorrow + 24
+          );
           const tomorrowWeatherCharacteristics = {
             dt: [],
             time: [],
             temperature: [],
             icon: [],
-            weather: []
+            weather: [],
           };
 
-          tomorrowHourlyWeather.forEach(hour => {
-            const tomorrowHourIconUrl = "http://openweathermap.org/img/wn/" + hour.weather[0].icon + "@2x.png";
+          tomorrowHourlyWeather.forEach((hour) => {
+            const tomorrowHourIconUrl =
+              "http://openweathermap.org/img/wn/" +
+              hour.weather[0].icon +
+              "@2x.png";
 
             tomorrowWeatherCharacteristics.dt.push(hour.dt);
-            tomorrowWeatherCharacteristics.time.push(date.hoursConverter(hour.dt));
+            tomorrowWeatherCharacteristics.time.push(
+              date.hoursConverter(hour.dt)
+            );
             tomorrowWeatherCharacteristics.temperature.push(hour.temp);
             tomorrowWeatherCharacteristics.icon.push(tomorrowHourIconUrl);
-            tomorrowWeatherCharacteristics.weather.push(hour.weather[0].description);
+            tomorrowWeatherCharacteristics.weather.push(
+              hour.weather[0].description
+            );
           });
 
           //------------------- Weahter for 8 DAYS of the Week------------------------------------
@@ -248,11 +300,12 @@ queryIsmade = true;
           const daylyForecast = weatherData.daily;
 
           const todayPrecipitationProbability = weatherData.daily[0].pop * 100;
-          const tomorrowPrecipitationProbability = weatherData.daily[1].pop * 100;
+          const tomorrowPrecipitationProbability =
+            weatherData.daily[1].pop * 100;
 
-
-          const weekDay = daylyForecast.map(day => date.timestampConverter(day.dt));
-
+          const weekDay = daylyForecast.map((day) =>
+            date.timestampConverter(day.dt)
+          );
 
           //----------------------------- RENDERING --------------------------------------
           res.render("today", {
@@ -282,24 +335,22 @@ queryIsmade = true;
             tomorrowWeatherDescription: tomorrowWeatherDescription,
             tomorrowIconUrl: tomorrowIconUrl,
             tomorrowHourlyTime: tomorrowWeatherCharacteristics.time,
-            tomorrowHourlyTemperature: tomorrowWeatherCharacteristics.temperature,
+            tomorrowHourlyTemperature:
+              tomorrowWeatherCharacteristics.temperature,
             tomorrowHourlyIcon: tomorrowWeatherCharacteristics.icon,
-            tomorrowHourlyWeatherDescription: tomorrowWeatherCharacteristics.weather,
+            tomorrowHourlyWeatherDescription:
+              tomorrowWeatherCharacteristics.weather,
             tomorrow: tomorrow,
             tomorrowPrecipitationProbability: tomorrowPrecipitationProbability,
 
-            displayedLocation: displayedLocation
+            displayedLocation: displayedLocation,
           });
         });
-
       });
-
     });
   });
 });
 
-
-
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function () {
   console.log("Server is running on port 3000");
 });
