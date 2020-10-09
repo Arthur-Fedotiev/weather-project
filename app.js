@@ -1,5 +1,6 @@
 //jshint esversion:6
 
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const https = require("https");
@@ -39,7 +40,7 @@ app.get("/today", function (req, res) {
 app.post("/today1", function (req, res) {
   const lat = req.body.latitude;
   const long = req.body.longitude;
-  const key = "pk.cb4d293dc5b9c4485829a61332d0756f";
+  const key = process.env.LOCATION_IQ_KEY;
   const format = "json";
 
   const locationUrl =
@@ -53,9 +54,6 @@ app.post("/today1", function (req, res) {
     format +
     "&accept-language=ukr" +
     "&normalizecity=1";
-
-  const appId = "059c7d620fd0e428b3446b8e192cfe1e";
-  const units = "metric";
 
   //+++++++++++++++++++++GET Request to LocationIQ API++++++++++++++++++
   https.get(locationUrl, function (response) {
@@ -75,7 +73,6 @@ app.post("/today1", function (req, res) {
 
       const userAddress = userCity + ", " + userRegion + ", " + userCountry;
 
-      console.log("You are in here:" + userCity);
       res.json({
         responseData: userAddress,
       });
@@ -86,7 +83,7 @@ app.post("/today1", function (req, res) {
 app.post("/today", function (req, res) {
   queryIsmade = true;
 
-  const key = "pk.cb4d293dc5b9c4485829a61332d0756f";
+  const key = process.env.LOCATION_IQ_KEY;
   const format = "json";
   let searchRequestFromUser = {
     locationUrl: "",
@@ -129,8 +126,6 @@ app.post("/today", function (req, res) {
       "&normalizecity=1";
   }
 
-  console.log(searchRequestFromUser.locationUrl);
-
   //+++++++++++++++++++++GET Request to LocationIQ API++++++++++++++++++
   https.get(searchRequestFromUser.locationUrl, function (response) {
     response.setEncoding("utf8");
@@ -165,10 +160,9 @@ app.post("/today", function (req, res) {
         userLocationData.userRegion +
         userLocationData.userCountry;
       displayedLocation = userLocationData.userAddress;
-      console.log("Located is " + userLocationData.userAddress);
 
       //+++++++++++++++++++++GET Request to OpenWheatherMap API++++++++++++++++++
-      const appId = "059c7d620fd0e428b3446b8e192cfe1e";
+      const appId = process.env.OPEN_WEATHER_KEY;
       const units = "metric";
 
       const weatherUrl =
@@ -181,7 +175,6 @@ app.post("/today", function (req, res) {
         "&units=" +
         units +
         "&lang=ua";
-      console.log(weatherUrl);
       https.get(weatherUrl, function (response) {
         response.setEncoding("utf8");
         let body2 = "";
@@ -227,17 +220,16 @@ app.post("/today", function (req, res) {
               dateTimestamp.weather[0].description
             );
             hourlyWeatherCharacteristics.icon.push(iconUrl);
+
             if (datestampInHours == 6) return false;
             else return true;
           });
-
           // MAX & MIN temperature for Current Day
           const maxTemp = hourlyWeatherCharacteristics.temperature.reduce(
             function (total, num) {
               return Math.max(total, num);
             }
           );
-          console.log(maxTemp);
           const minTemp = hourlyWeatherCharacteristics.temperature.reduce(
             function (total, num) {
               return Math.min(total, num);
@@ -257,7 +249,6 @@ app.post("/today", function (req, res) {
 
           const beginOfTomorrow = weatherData.daily[1].dt - 5 * 3600; //12PM - 5hours = 7 a.m.
           const tomorrow = date.timestampConverter(beginOfTomorrow);
-          console.log(tomorrow);
           //Find the index of the element of 7 a.m.
           let indexOfbeginOfTomorrow;
           weatherOfHours.forEach(function (dt, index) {
